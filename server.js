@@ -13,6 +13,28 @@ console.log('🌍 Environment:', process.env.NODE_ENV || 'development');
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
+// Serve index.html explicitly for root path
+app.get('/', (req, res) => {
+    // Try to serve the dashboard first
+    res.sendFile(path.join(__dirname, 'public', 'index.html'), (err) => {
+        if (err) {
+            // Fallback to JSON response if dashboard not found
+            res.json({
+                message: '🌧️ Mumbai Rain Monitor API is running!',
+                status: 'running',
+                timestamp: new Date().toISOString(),
+                dashboard: '/index.html',
+                api: {
+                    status: '/api/status',
+                    weather: '/api/weather',
+                    start: 'POST /api/start',
+                    stop: 'POST /api/stop',
+                    test: '/api/test'
+                }
+            });
+        }
+    });
+});
 
 // Mumbai zones with coordinates
 const MUMBAI_ZONES = [
